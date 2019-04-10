@@ -1,0 +1,38 @@
+{
+  "name": "logger",
+  "version": "0.1.0",
+  "description": "Preconfigured logger",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "jest",
+    "tsc": "tsc",
+    "watch-ts": "tsc -w",
+    "build": "tsc && npm run tslint",
+    "start": "node dist/index.js",
+    "launch": "npm run build && npm start",
+    "tslint": "tslint -c tslint.json -p tsconfig.json 'src/**/*.ts'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zorzal2/node-logger.git"
+  },
+  "keywords": [
+    "logger"
+  ],
+  "author": "llobeto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zorzal2/node-logger/issues"
+  },
+  "homepage": "https://github.com/zorzal2/node-logger#readme",
+  "dependencies": {
+    "@types/node": "^11.13.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "jest": "^24.7.1",
+    "ts-jest": "^24.0.1",
+    "tslint": "^5.15.0",
+    "typescript": "^3.4.1"
+  }
+}
