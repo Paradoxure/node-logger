@@ -1,6 +1,6 @@
 {
   "name": "@zorzal2/logger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Preconfigured logger",
   "main": "src/index.js",
   "types": "dist/index.d.ts",
@@ -28,12 +28,13 @@
   "homepage": "https://github.com/zorzal2/node-logger#readme",
   "dependencies": {
     "@types/node": "^11.13.4",
-    "@zorzal2/context": "^0.1.1",
+    "@zorzal2/context": "^0.1.2",
     "moment": "^2.24.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
     "capture-stdout": "^1.0.0",
+    "express": "^4.16.4",
     "jest": "^24.7.1",
     "ts-jest": "^24.0.2",
     "tslint": "^5.15.0",

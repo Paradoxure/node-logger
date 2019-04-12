@@ -1,40 +1,57 @@
 import { conf } from './conf';
 import moment from 'moment';
-import { get } from '@zorzal2/context';
+import context from '@zorzal2/context';
+
+type LogLevelNames = 'debug' | 'info' | 'warning' | 'error' | 'all' | 'none';
+
+class LogLevel {
+  constructor(
+    public number: number,
+    public name: LogLevelNames,
+  ) { }
+}
 
 class Severity {
   constructor(
     public number: number,
     public displayName: string,
-    public name: string,
     public stream: NodeJS.WriteStream
   ) { }
 }
 
-type SeverityName = 'debug' | 'info' | 'warning' | 'error';
+let LogLevels: { [logLevelName in LogLevelNames]: LogLevel } = {
+  all: new LogLevel(100, 'all'),
 
-let Severities: { [severityName in SeverityName]: Severity } = {
-  debug: new Severity(7, 'DEBUG', 'debug', process.stdout),
-  info: new Severity(6, 'INFO', 'info', process.stdout),
-  warning: new Severity(4, 'WARNING', 'warning', process.stderr),
-  error: new Severity(3, 'ERROR', 'error', process.stderr)
+  debug: new LogLevel(7, 'debug'),
+  info: new LogLevel(6, 'info'),
+  warning: new LogLevel(4, 'warning'),
+  error: new LogLevel(3, 'error'),
+
+  none: new LogLevel(-1, 'none')
 };
 
-let globalSeverity: Severity =
-  Severities[String(conf.level).toLocaleLowerCase()] || Severities.debug;
+let Severities: { [severityName: string]: Severity } = {
+  debug: new Severity(7, 'DEBUG', process.stdout),
+  info: new Severity(6, 'INFO', process.stdout),
+  warning: new Severity(4, 'WARNING', process.stderr),
+  error: new Severity(3, 'ERROR', process.stderr)
+};
+
+let globalLogLevel: LogLevel =
+  LogLevel[String(conf.level).toLocaleLowerCase()] || LogLevels.all;
 
 class Logger {
 
-  private level: Severity | undefined = undefined;
+  private level: LogLevel | undefined = undefined;
 
   constructor(private label: string) { }
 
   getLevel() {
-    return this.level ? this.level.name : globalSeverity.name;
+    return this.level ? this.level.name : globalLogLevel.name;
   }
 
-  setLevel(levelName: SeverityName) {
-    this.level = Severities[levelName];
+  setLevel(levelName: LogLevelNames) {
+    this.level = LogLevels[levelName];
     return this;
   }
 
@@ -55,8 +72,8 @@ class Logger {
     this.log(Severities.error, messages);
   }
 
-  protected levelSeverity(): Severity {
-    return this.level || globalSeverity;
+  protected currentLogLevel(): LogLevel {
+    return this.level || globalLogLevel;
   }
 
   private asString(message): string {
@@ -66,9 +83,9 @@ class Logger {
   }
 
   private log(severity: Severity, messages: any[]) {
-    if (this.levelSeverity().number >= severity.number) {
+    if (this.currentLogLevel().number >= severity.number) {
       let time = moment().toISOString(true);
-      let txID = get('TxID') || '';
+      let txID = context.get('TxID') || '';
       let strings = messages.map(this.asString).join(' ');
       severity.stream.write(`${time} [${this.label}][${txID}] ${severity.displayName}: ${strings}\n`);
     }
@@ -81,20 +98,20 @@ class MainLogger extends Logger {
     super('');
   }
 
-  protected levelSeverity() {
-    return globalSeverity;
+  protected currentLogLevel() {
+    return globalLogLevel;
   }
 
-  setLevel(levelName: SeverityName) {
-    globalSeverity = Severities[levelName];
+  setLevel(levelName: LogLevelNames) {
+    globalLogLevel = LogLevels[levelName];
     return this;
   }
 
   getLevel() {
-    return globalSeverity.name;
+    return globalLogLevel.name;
   }
 
-  create(label: string, levelName?: SeverityName) {
+  create(label: string, levelName?: LogLevelNames) {
     const newLogger =  new Logger(label);
     if (levelName) newLogger.setLevel(levelName);
     return newLogger;
