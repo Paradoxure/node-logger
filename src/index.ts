@@ -38,7 +38,7 @@ let Severities: { [severityName: string]: Severity } = {
 };
 
 let globalLogLevel: LogLevel =
-  LogLevel[String(conf.level).toLocaleLowerCase()] || LogLevels.all;
+  LogLevels[String(conf.level).toLowerCase()] || LogLevels.all;
 
 class Logger {
 
