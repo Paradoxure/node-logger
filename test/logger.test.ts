@@ -15,7 +15,7 @@ process.stderr.write = message => {
 
 import logger from '../src/index';
 
-const defaultLogLevel = 'all';
+const defaultLogLevel = 'debug';
 
 describe('Default logger', () => {
   test('Label is empty', () => {

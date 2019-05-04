@@ -85,9 +85,9 @@ class Logger {
   private log(severity: Severity, messages: any[]) {
     if (this.currentLogLevel().number >= severity.number) {
       let time = moment().toISOString(true);
-      let txID = context.get('TxID') || '';
+      let txid = context.get('txid') || '';
       let strings = messages.map(this.asString).join(' ');
-      severity.stream.write(`${time} [${this.label}][${txID}] ${severity.displayName}: ${strings}\n`);
+      severity.stream.write(`${time} [${this.label}][${txid}] ${severity.displayName}: ${strings}\n`);
     }
     return this;
   }
